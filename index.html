@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+
+    <title>PHOTO ALBUM | OMORI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Redacted+Script&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            /* sumber: https://www.deviantart.com/carlyissleepy/art/Omori-background-fan-art-%3AD-922734588 */
+            background-image: url('images/background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: bottom center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        .music-button,
+        .back-button {
+            background: black;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+        }
+
+        .back-button {
+            display: none;
+        }
+
+        /* Halaman Awal */
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            height: 100vh;
+            justify-content: center;
+            padding-inline: clamp(20px, 60px, 100px);
+        }
+
+        /* Pilihan sampul album */
+        .cover-row {
+            display: flex;
+            gap: clamp(12px, 3vw, 36px);
+            margin-top: 10px;
+        }
+
+        .cover {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            font-family: "Gloria Hallelujah", cursive;
+            font-weight: bold;
+            font-size: clamp(11px, 1.4vw, 15px);
+        }
+
+        .cover img {
+            width: clamp(70px, 12vw, 130px);
+            height: auto;
+            filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.5));
+        }
+
+        .cover span {
+            background: white;
+            border: 2px solid black;
+            border-radius: 8px;
+            padding: 2px 8px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .cover:hover {
+            transform: scale(1.1);
+        }
+
+        .cover:hover span {
+            background: black;
+            color: white;
+        }
+
+        /* Judul */
+        .start-title {
+            font-size: clamp(36px, 6vw, 70px);
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-family: "Lobster", cursive;
+            color: rgb(235, 235, 25);
+            text-shadow:
+                -2px -2px 0 black,
+                2px -2px 0 black,
+                -2px 2px 0 black,
+                2px 2px 0 black;
+        }
+
+        /* Deskripsi */
+        .start-desc {
+            font-size: clamp(15px, 2vw, 20px);
+            margin-bottom: 30px;
+            font-family: "Gloria Hallelujah", cursive;
+            font-style: italic;
+            font-weight: bold;
+            color: black;
+            background: white;
+            border: 3px solid black;
+            padding: 5px 15px;
+            border-radius: 10px;
+        }
+
+        .start-button {
+            width: clamp(80px, 8vw, 120px);
+            height: clamp(80px, 8vw, 120px);
+            background: white;
+            color: black;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Gloria Hallelujah", cursive;
+            font-size: clamp(15px, 2vw, 20px);
+            font-weight: bold;
+            cursor: pointer;
+            border: 3px solid black;
+            transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Efek Hover */
+        .start-button:hover {
+            transform: scale(1.1);
+            background: black;
+            color: white;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Efek Animasi Masuk */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cover-row,
+        .start-title,
+        .start-desc {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Album */
+        .album-container {
+            display: none;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: auto;
+            padding-inline: clamp(50px, 100px, 150px);
+        }
+
+        .navigation {
+            padding: 15px 25px;
+            font-size: 18px;
+            cursor: pointer;
+            background: rgb(0, 0, 0);
+            color: rgb(255, 255, 255);
+            margin: 20px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .album {
+            display: flex;
+            background: #f4f4f4;
+            border: 3px solid #000;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+            width: 840px;
+            height: 600px;
+            position: relative;
+            flex-shrink: 0;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+        }
+
+        .page {
+            width: 50%;
+            margin-inline: 20px;
+            display: flex;
+            padding-inline: 10px;
+            padding-block: 30px;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .divider {
+            width: 3px;
+            background: #b4b4b4;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 1);
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+        }
+
+        .photo-entry {
+            display: flex;
+            align-items: center;
+        }
+
+        .photo {
+            width: 130px;
+            height: 156px;
+            background: #f4f4f4;
+            margin: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .caption {
+            font-family: "Gloria+Hallelujah", cursive;
+            font-size: 12px;
+            text-align: left;
+            max-width: 200px;
+            margin-left: 10px;
+        }
+
+        .scribbled-text {
+            font-family: 'Redacted Script', cursive;
+            font-size: 20px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <audio id="background-music" autoplay loop>
+        <!-- sumber: https://static.wikia.nocookie.net/omori/images/6/62/Event_maris_theme.ogg/revision/latest?cb=20210117051345 -->
+        <source src="audio/Event_maris_theme.ogg" type="audio/ogg">
+    </audio>
+
+    <div class="button-container">
+        <button class="back-button" onclick="goBack()">🡰</button>
+        <button id="musicButton" class="music-button" onclick="toggleMusic()">🔇</button>
+    </div>
+
+    <!-- Halaman Awal -->
+    <div class="start-screen">
+        <div class="start-title">Photo Album</div>
+        <div class="start-desc">BASIL's most precious belonging.</div>
+        <div class="cover-row">
+            <div class="cover" onclick="openAlbum('faraway')">
+                <!-- sumber: https://static.wikia.nocookie.net/omori/images/f/fa/RWPhotoAlbumCover.png/revision/latest?cb=20201231082154 -->
+                <img src="images/RWPhotoAlbumCover.webp" alt="FARAWAY TOWN">
+                <span>FARAWAY TOWN</span>
+            </div>
+            <div class="cover" onclick="openAlbum('headspace')">
+                <!-- sumber: https://static.wikia.nocookie.net/omori/images/4/4b/DWPhotoAlbumCover.png/revision/latest?cb=20201231081248 -->
+                <img src="images/DWPhotoAlbumCover.webp" alt="HEADSPACE">
+                <span>HEADSPACE</span>
+            </div>
+            <div class="cover" onclick="openAlbum('blackspace')">
+                <!-- sumber: https://static.wikia.nocookie.net/omori/images/a/a6/TruthPhotoAlbumCover.png/revision/latest?cb=20201231082308 -->
+                <img src="images/TruthPhotoAlbumCover.webp" alt="BLACK SPACE">
+                <span>BLACK SPACE</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Album -->
+    <div class="album-container">
+        <button class="navigation" onclick="prevPage()">&lt;</button>
+        <div class="album">
+            <div class="page" id="page-left"></div>
+            <div class="divider"></div>
+            <div class="page" id="page-right"></div>
+        </div>
+        <button class="navigation" onclick="nextPage()">&gt;</button>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const albums = {
+            "faraway": [
+                {
+                    "left": [
+                        {
+                            "src": "images/FA_ALBUM_01.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/5/55/FA_ALBUM_01.png/revision/latest?cb=20210104163712",
+                            "title": "(12/25 - CHRISTMAS)",
+                            "desc": "My first photo! It's my best friend, SUNNY, trying out his new violin. He's starting to take lessons again so he can play at recitals with his sister, MARI. So exciting!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_02.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/d/d2/FA_ALBUM_02.png/revision/latest?cb=20210104163725",
+                            "title": "(2/18 - MY BIRTHDAY)",
+                            "desc": "It's my 12th birthday today! I thought my friends forgot, but they all surprised me with a strawberry cake. I feel so lucky... This year is looking to be a good year!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_03.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/e/eb/FA_ALBUM_03.png/revision/latest?cb=20210104163740",
+                            "title": "(2/18 MY BIRTHDAY)",
+                            "desc": "Another group photo. This was a little after I opened all my presents! MARI bought me this photo album, and everyone else bought me film for my camera. I'll try my best to use it all."
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/FA_ALBUM_04.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/7/7a/FA_ALBUM_04.png/revision/latest?cb=20210104163758",
+                            "title": "(2/18 - MY BIRTHDAY)",
+                            "desc": "Just KEL being KEL... So... many... party hats..."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_05.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/3/33/FA_ALBUM_05.png/revision/latest?cb=20210104163818",
+                            "title": "(2/18 MY BIRTHDAY)",
+                            "desc": "SUNNY playing a video game on the couch. SUNNY is a little shy, but he's a really good listener. I always end up venting to him when I get upset or stressed. Sometimes I feel like I'm bothering him, but he never seems to mind."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_06.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/b/b4/FA_ALBUM_06.png/revision/latest?cb=20210104163829",
+                            "title": "(2/18 - MY BIRTHDAY)",
+                            "desc": "MARI and HERO  fell asleep on the couch. They look so cozy together... Hehe... I hope they don't mind the photo. MARI's dad might be kind of mad if he saw it..."
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/FA_ALBUM_07.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/6/6a/FA_ALBUM_07.png/revision/latest?cb=20210104163841",
+                            "title": "(3/9)",
+                            "desc": "HERO and MARI washing the dishes from breakfast. We're staying over with MARI and SUNNY this weekend. It's getting warmer lately so we're about to go to the park. KEL says there's a secret lake area behind some bushes, so we're all going to check it out!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_08.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/1/1a/FA_ALBUM_08.png/revision/latest?cb=20210104163904",
+                            "title": "(3/9)",
+                            "desc": "We're back from the park, but KEL is still full of energy. He challenged HERO to an arm-wrestling match, but we all know who's going to win... please go easy on him, HERO..."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_09.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/0/0e/FA_ALBUM_09.png/revision/latest?cb=20210104163923",
+                            "title": "(3/9)",
+                            "desc": "Oof... Sorry, KEL... Better luck next time."
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/FA_ALBUM_10.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/7/79/FA_ALBUM_10.png/revision/latest?cb=20210104163935",
+                            "title": "(3/10)",
+                            "desc": "KEL was still feeling a little sour about losing to HERO in arm-wrestling last night, so HERO decided to lean in for a smooch! KEL looks so annoyed. Ah, brotherly love..."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_11.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/e/ee/FA_ALBUM_11.png/revision/latest?cb=20210104163949",
+                            "title": "(3/10)",
+                            "desc": "Me showing SUNNY a book I've been reading. MARI stole my camera and took this when I wasn't paying attention. I should really keep better track of my things."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_12.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/6/6e/FA_ALBUM_12.png/revision/latest?cb=20210104164006",
+                            "title": "(3/10)",
+                            "desc": "It's all of us cuddling with SUNNY's stuffed animals. He has so many, and they're all so soft! I wish I could just lay here forever."
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/FA_ALBUM_13.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/9/9b/FA_ALBUM_13.png/revision/latest?cb=20210104164025",
+                            "title": "(3/31)",
+                            "desc": "It's already the last day of March! We're having a picnic with MARI at our secret lake spot. MARI wanted to take pictures of everyone! Say cheese!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_14.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/c/cc/FA_ALBUM_14.png/revision/latest?cb=20210104164044",
+                            "title": "(3/31)",
+                            "desc": "After eating all the food, everyone fell asleep, except me, HERO, and MARI. Something unfortunate happened when I was taking the photo. Ahem... Thanks a lot, HECTOR. I'll have to cover it up with tape later."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_15.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/1/1a/FA_ALBUM_15.png/revision/latest?cb=20210104164109",
+                            "title": "(4/9)",
+                            "desc": "I caught MARI carrying SUNNY on the way home from school today. He must have fallen asleep on the bus. I thought it was so cute, so I got my camera out as quick as I could to snap this once-in-a-lifetime photo! Sigh... Sometimes I wish I had a sibling."
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/FA_ALBUM_16.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/9/96/FA_ALBUM_16.png/revision/latest?cb=20210104164120",
+                            "title": "(4/21)",
+                            "desc": "MARI is teaching everyone how to make flower crowns! Here's SUNNY and KEL holding MARI's example. It looks perfect, doesn't it? If only MARI thought so, too."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_17.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/6/6a/FA_ALBUM_17.png/revision/latest?cb=20210104164131",
+                            "title": "(4/21)",
+                            "desc": "SUNNY and KEL gave up on making flower crowns and ran off, but AUBREY and I got the hang of it really fast! Everyone thinks a flower crown really suits me. Maybe just a flower is okay."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_18.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/d/df/FA_ALBUM_18.png/revision/latest?cb=20210104164144",
+                            "title": "(4/21)",
+                            "desc": "HERO's still making his flower crown. It's taking him a little while, but he's getting there. You have to admire his persistence!"
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/FA_ALBUM_19.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/8/84/FA_ALBUM_19.png/revision/latest?cb=20210104164201",
+                            "title": "(4/29)",
+                            "desc": "It's raining super hard today! The rain always seems to come out of nowhere during springtime. AUBREY asked me to take a picture of her with her new raincoat. It's her favorite color, pink!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_20.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/5/5a/FA_ALBUM_20.png/revision/latest?cb=20210104164214",
+                            "title": "(4/29)",
+                            "desc": "AUBREY won't let KEL under the umbrella, but KEL seems to be taking it just fine. He says he likes how the rain tastes."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_21.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/9/90/FA_ALBUM_21.png/revision/latest?cb=20210104164227",
+                            "title": "(4/29)",
+                            "desc": "Just KEL being KEL again... We went to HOBBEEZ, but the shop owner told KEL to leave his jacket outside since KEL was getting all his comics wet. Sorry, SHOPKEEP."
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/FA_ALBUM_22.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/8/83/FA_ALBUM_22.png/revision/latest?cb=20210104164237",
+                            "title": "(5/25)",
+                            "desc": "It's been pretty busy with school lately, but we finally made time to get together and go to the park today. Here's KEL hanging his legs off a tree. He's such a good climber! I wish I was as fearless as him."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_23.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/c/c8/FA_ALBUM_23.png/revision/latest?cb=20210104164257",
+                            "title": "(5/25)",
+                            "desc": "MARI bought everyone popsicles, one of every flavor! SUNNY got lemon, HERO got root beer, KEL got orange, AUBREY got watermelon, and MARI got grape! Mine was banana... It tasted okay."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_24.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/d/dd/FA_ALBUM_24.png/revision/latest?cb=20210104164308",
+                            "title": "(5/25)",
+                            "desc": "All of our shoes in a circle! Can you guess whose shoes are whose?"
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/FA_ALBUM_25.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/6/62/FA_ALBUM_25.png/revision/latest?cb=20210104164408",
+                            "title": "(6/22)",
+                            "desc": "It's the first day of summer vacation, so we all wanted to celebrate by going to the beach!  WATERMELON is AUBREY's favorite."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_26.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/6/60/FA_ALBUM_26.png/revision/latest?cb=20210104164422",
+                            "title": "(6/22)",
+                            "desc": "KEL cooling off with some refreshing ORANGE JOE! I shouldn't get too close or he might get my camera wet. KEL is known to spill his drinks."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_27.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/8/81/FA_ALBUM_27.png/revision/latest?cb=20210104164433",
+                            "title": "(6/22)",
+                            "desc": "We buried SUNNY in the sand! It took forever, but looks like he's enjoying himself. I wonder if he's going to need help getting out. I guess I'll keep him company until then."
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/FA_ALBUM_28.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/0/00/FA_ALBUM_28.png/revision/latest?cb=20210104164451",
+                            "title": "(6/22)",
+                            "desc": "MARI says she wants to get a summer tan! I'm scared to fall asleep in the sun, since I get sunburned really easily. Hmm... I'm not sure what KEL is doing here, but he's probably having a good time."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_29.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/b/ba/FA_ALBUM_29.png/revision/latest?cb=20210104164502",
+                            "title": "(6/22)",
+                            "desc": "HERO sleeping on MARI. He's all tired out from swimming. Well... It seems like MARI won't be able to get her summer tan after all."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_30.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/7/71/FA_ALBUM_30.png/revision/latest?cb=20210104164514",
+                            "title": "(6/22)",
+                            "desc": "We're about to head home, but I managed to catch one last photo with MARI and HERO! They look so happy. A match made in heaven!"
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/FA_ALBUM_31.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/0/08/FA_ALBUM_31.png/revision/latest?cb=20210104164529",
+                            "title": "(7/20 - SUNNY'S BIRTHDAY)",
+                            "desc": "Yay! SUNNY is turning 12 today! Even though me, SUNNY, AUBREY AND KEL are in the same school year, SUNNY is younger than all of us. He's the baby of the group, so we have to take care of him!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_32.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/9/9b/FA_ALBUM_32.png/revision/latest?cb=20210104164615",
+                            "title": "(7/20 SUNNY'S BIRTHDAY)",
+                            "desc": "SUNNY holding a super huge present, from MARI and HERO! Hmm... I wonder what it is."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_33.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/6/62/FA_ALBUM_33.png/revision/latest?cb=20210104164712",
+                            "title": "(7/20 - SUNNY'S BIRTHDAY)",
+                            "desc": "You can't really tell from the photo, but MARI and HERO got SUNNY a giant building block set.  SUNNY seems much more interested in the box though. He acts just like MARI's new kitten, MEWO!"
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/FA_ALBUM_34.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/b/b0/FA_ALBUM_34.png/revision/latest?cb=20210104164727",
+                            "title": "(7/20 SUNNY'S BIRTHDAY)",
+                            "desc": "SUNNY won't leave the box, so KEL put a food bowl inside. I guess this box will be SUNNY and MEWO's new home."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_35.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/4/4b/FA_ALBUM_35.png/revision/latest?cb=20210522035457",
+                            "title": "(8/4)",
+                            "desc": "We're going beetle-catching today! Here's KEL, ready to pounce on his next victim! Oh, and SUNNY is there too. He looks kind of sleepy."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_36.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/1/17/FA_ALBUM_36.png/revision/latest?cb=20210104164759",
+                            "title": "(8/4)",
+                            "desc": "MARI says this beetle is a giant stag. It suddenly fell from a tree and surprised everyone! HERO is too grossed out to look."
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/FA_ALBUM_37.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/5/54/FA_ALBUM_37.png/revision/latest?cb=20210104164851",
+                            "title": "(8/14)",
+                            "desc": "Ta-da! All summer, we've been working on a treehouse in SUNNY's backyard and today it's finally finished! HERO and his dad did most of the heavy work, but AUBREY and I made paper plants to put in the window sill! We all did a pretty good job, if I do say so myself!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_38.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/5/58/FA_ALBUM_38.png/revision/latest?cb=20210104164902",
+                            "title": "(8/14)",
+                            "desc": "I went to the bathroom, and came back to this photo... KEL says he took a picture of himself on accident, but I don't believe him..."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_39.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/9/9a/FA_ALBUM_39.png/revision/latest?cb=20210104164915",
+                            "title": "(8/16)",
+                            "desc": "All of us hanging out in our brand new treehouse! Looks like SUNNY is finally reading the book I showed him! I want to spend every day in here, but it's a shame that summer vacation is almost over. I hope we get to use this treehouse more next summer!"
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/FA_ALBUM_40.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/3/36/FA_ALBUM_40.png/revision/latest?cb=20210104164929",
+                            "title": "(8/18)",
+                            "desc": "We went to HOBBEEZ to read the latest edition of CAPT. SPACEBOY! Everyone's so into it right now! I'm sure it's all anyone is going to be talking about once school starts."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_41.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/e/ec/FA_ALBUM_41.png/revision/latest?cb=20210104164941",
+                            "title": "(9/6)",
+                            "desc": "I'm playing cards with KEL, HERO, and AUBREY. They're so easy to read. They can't hide anything on their faces! MARI baked everyone cookies from scratch. They were chocolate chip and super delicious, like always!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_42.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/4/4f/FA_ALBUM_42.png/revision/latest?cb=20210104164955",
+                            "title": "(9/6)",
+                            "desc": "Looks like I have the winning hand, hehe... But nobody knows that yet..."
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/FA_ALBUM_43.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/9/9c/FA_ALBUM_43.png/revision/latest?cb=20210104165006",
+                            "title": "(9/9)",
+                            "desc": "It's the first day of school today! Me, SUNNY, KEL, and AUBREY are up bright and early. AUBREY is so photogenic!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_44.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/e/eb/FA_ALBUM_44.png/revision/latest?cb=20210104165016",
+                            "title": "(9/9)",
+                            "desc": "Sigh... Goodbye, summer! Until next year..."
+                        },
+                        {
+                            "src": "images/FA_ALBUM_45.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/7/71/FA_ALBUM_45.png/revision/latest?cb=20210104165030",
+                            "title": "(9/9)",
+                            "desc": "SUNNY giving MARI a big hug! MARI doesn't come home until late now because she's taking extra classes to prepare for college. Me and SUNNY have been hanging out a lot, but I'm sure he still misses her a lot."
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/FA_ALBUM_46.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/c/cc/FA_ALBUM_46.png/revision/latest?cb=20210104165041",
+                            "title": "(9/22)",
+                            "desc": "MARI practicing her part for a big recital next month. We're all going to go watch! It's going to be MARI and SUNNY's first performance together, but I know they'll do just fine! We will all be showing our support from the audience!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_47.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/f/f9/FA_ALBUM_47.png/revision/latest?cb=20210104165051",
+                            "title": "(9/22)",
+                            "desc": "MARI getting a little camera shy, because she's made a small mistake. Don't worry, MARI! Just keep going! No one will even notice!"
+                        },
+                        {
+                            "src": "images/FA_ALBUM_48.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/1/15/FA_ALBUM_48.png/revision/latest?cb=20210104165103",
+                            "title": "(9/22)",
+                            "desc": "After some begging, SUNNY came to join MARI for recital practice... Hehe... They're still working out some stuff, but they already sound so amazing! I know they're going to be great. Go, MARI! Go, SUNNY! You can do it!"
+                        }
+                    ]
+                }
+            ],
+            "headspace": [
+                {
+                    "left": [
+                        {
+                            "src": "images/DW_ALBUM_01.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/6/63/DW_ALBUM_01.png/revision/latest?cb=20210410075139",
+                            "title": "",
+                            "desc": "MARI is teaching everyone how to make flower crowns! OMORI and KEL are holding MARI's example. So pretty..."
+                        },
+                        {
+                            "src": "images/DW_ALBUM_02.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/a/a6/DW_ALBUM_02.png/revision/latest?cb=20210410075630",
+                            "title": "",
+                            "desc": "OMORI and KEL gave up and ran off, but AUBREY and I got the hang of it really fast!"
+                        },
+                        {
+                            "src": "images/DW_ALBUM_03.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/4/41/DW_ALBUM_03.png/revision/latest?cb=20210410080326",
+                            "title": "",
+                            "desc": "HERO's still making his flower crown. It's taking him a little while, but he's getting it. You have to admire his persistence."
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/DW_ALBUM_04.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/f/fe/DW_ALBUM_04.png/revision/latest?cb=20210410080438",
+                            "title": "",
+                            "desc": "Everyone's eating watermelons. So juicy! AUBREY has some seeds on her face. Maybe someone should tell her."
+                        },
+                        {
+                            "src": "images/DW_ALBUM_05.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/d/dd/DW_ALBUM_05.png/revision/latest?cb=20210410080645",
+                            "title": "",
+                            "desc": "KEL drinking a bottle of MILK, his favorite! I shouldn't get too close or he might get my camera wet."
+                        },
+                        {
+                            "src": "images/DW_ALBUM_06.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/1/15/DW_ALBUM_06.png/revision/latest?cb=20210410075423",
+                            "title": "",
+                            "desc": "MARI had HERO take a picture of us. Everyone thinks a flower crown really suits me."
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/DW_ALBUM_07.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/0/08/DW_ALBUM_07.png/revision/latest?cb=20210410080725",
+                            "title": "",
+                            "desc": "HERO leaning in for a smooch! KEL looks so annoyed. Ah, brotherly love..."
+                        },
+                        {
+                            "src": "images/DW_ALBUM_08.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/0/0d/DW_ALBUM_08.png/revision/latest?cb=20210410075941",
+                            "title": "",
+                            "desc": "We're having a picnic today! MARI wanted to take a picture of everyone. Say cheese!"
+                        },
+                        {
+                            "src": "images/DW_ALBUM_09.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/3/3c/DW_ALBUM_09.png/revision/latest?cb=20210410080120",
+                            "title": "",
+                            "desc": "After eating, everyone fell asleep, except HERO and MARI. I'm getting kind of sleepy myself."
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/DW_ALBUM_10.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/8/84/DW_ALBUM_10.png/revision/latest?cb=20210410080915",
+                            "title": "",
+                            "desc": "KEL said he took a picture of himself on accident, but I don't believe him...."
+                        },
+                        {
+                            "src": "images/DW_ALBUM_11.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/4/4e/DW_ALBUM_11.png/revision/latest?cb=20210410080923",
+                            "title": "",
+                            "desc": "All of our feet in a circle! Can you guess whose feet are whose?"
+                        },
+                        {
+                            "src": "images/DW_Final_Blurry.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/e/ef/DW_Final_Blurry.png/revision/latest?cb=20210517004026",
+                            "title": "",
+                            "desc": "<p class=\"scribbled-text\">...</p>"
+                        }
+                    ]
+                }
+            ],
+            "blackspace": [
+                {
+                    "left": [
+                        {
+                            "src": "images/The_Truth_01.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/9/94/The_Truth_01.png/revision/latest?cb=20210525115944",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_02.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/8/8d/The_Truth_02.png/revision/latest?cb=20210525120227",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_03.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/1/1a/The_Truth_03.png/revision/latest?cb=20210525120413",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/The_Truth_04.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/c/c2/The_Truth_04.png/revision/latest?cb=20210525120653",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_05.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/d/da/The_Truth_05.png/revision/latest?cb=20210525121004",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_06.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/a/a3/The_Truth_06.png/revision/latest?cb=20210525121415",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/The_Truth_07.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/2/21/The_Truth_07.png/revision/latest?cb=20210525122150",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_08.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/8/88/The_Truth_08.png/revision/latest?cb=20210525122607",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_09.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/0/0e/The_Truth_09.png/revision/latest?cb=20210525123209",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/The_Truth_10.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/4/49/The_Truth_10.png/revision/latest?cb=20210525124144",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_11.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/e/e0/The_Truth_11.png/revision/latest?cb=20210525125730",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_12.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/c/ce/The_Truth_12.png/revision/latest?cb=20210525125748",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/The_Truth_13.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/6/64/The_Truth_13.png/revision/latest?cb=20210525121855",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_14.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/3/39/The_Truth_14.png/revision/latest?cb=20210526053535",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_15.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/b/b5/The_Truth_15.png/revision/latest?cb=20210526053639",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/The_Truth_16.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/b/b6/The_Truth_16.png/revision/latest?cb=20210526053751",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_17.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/e/ec/The_Truth_17.png/revision/latest?cb=20210526053920",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_18.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/8/85/The_Truth_18.png/revision/latest?cb=20210526054033",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        }
+                    ]
+                },
+                {
+                    "left": [
+                        {
+                            "src": "images/The_Truth_19.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/b/b4/The_Truth_19.png/revision/latest?cb=20210526054209",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_20.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/c/c0/The_Truth_20.png/revision/latest?cb=20210526054319",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_21.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/d/d8/The_Truth_21.png/revision/latest?cb=20210526054529",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        }
+                    ],
+                    "right": [
+                        {
+                            "src": "images/The_Truth_22.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/0/02/The_Truth_22.png/revision/latest?cb=20210526054623",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_23.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/c/c0/The_Truth_23.png/revision/latest?cb=20210526054819",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        },
+                        {
+                            "src": "images/The_Truth_24.webp",
+                            "source": "https://static.wikia.nocookie.net/omori/images/b/ba/The_Truth_24.png/revision/latest?cb=20210526054952",
+                            "title": "<p class=\"scribbled-text\">...</p>",
+                            "desc": ""
+                        }
+                    ]
+                }
+            ]
+        };
+        let pages = albums.faraway;
+
+        function updatePhotos() {
+            const leftPage = document.getElementById('page-left');
+            const rightPage = document.getElementById('page-right');
+            leftPage.innerHTML = '';
+            rightPage.innerHTML = '';
+
+            pages[currentPage].left.forEach((photo, index) => {
+                leftPage.innerHTML += `
+                    <div class="photo-entry" style="flex-direction: ${index % 2 === 0 ? 'row' : 'row-reverse'};">
+                        
+                        ${photo.src ? `<a class="photo"><img src="${photo.src}" alt="Photo"></a>` : `<a class="photo"></a>`}
+                        
+                        <div class="caption">
+                            <strong>${photo.title}</strong><br>
+                            ${photo.desc}
+                        </div>
+                    </div>
+                `;
+            });
+
+            pages[currentPage].right.forEach((photo, index) => {
+                rightPage.innerHTML += `
+                    <div class="photo-entry" style="flex-direction: ${index % 2 === 0 ? 'row' : 'row-reverse'};">
+                        
+                        ${photo.src ? `<a class="photo"><img src="${photo.src}" alt="Photo"></a>` : `<a class="photo"></a>`}
+                        
+                        <div class="caption">
+                            <strong>${photo.title}</strong><br>
+                            ${photo.desc}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function nextPage() {
+            if (currentPage < pages.length - 1) {
+                currentPage++;
+                updatePhotos();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePhotos();
+            }
+        }
+
+        function openAlbum(key) {
+            pages = albums[key];
+            currentPage = 0;
+            startAlbum();
+        }
+
+        function startAlbum() {
+            document.querySelector('.start-screen').style.display = 'none';
+            document.querySelector('.album-container').style.display = 'flex';
+            document.querySelector('.back-button').style.display = "block";
+            updatePhotos();
+        }
+
+        function goBack() {
+            document.querySelector('.album-container').style.display = 'none';
+            document.querySelector('.start-screen').style.display = 'flex';
+            document.querySelector('.back-button').style.display = "none";
+        }
+
+        // Background Music
+        function toggleMusic() {
+            var audio = document.getElementById("background-music");
+            var musicButton = document.getElementById("musicButton");
+            if (audio.paused) {
+                audio.play();
+                musicButton.textContent = "🔊";
+            } else {
+                audio.pause();
+                musicButton.textContent = "🔇";
+            }
+        }
+
+        // Memulai musik setelah halaman dimuat (jika diizinkan oleh browser)
+        window.onload = function () {
+            var audio = document.getElementById("background-music");
+            audio.play().catch(error => console.log("Autoplay diblokir oleh browser:", error));
+        };
+
+        updatePhotos();
+    </script>
+</body>
+
+</html>
